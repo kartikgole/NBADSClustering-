@@ -1,9 +1,12 @@
 import pandas as pd
 import numpy as np
-import math
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 plt.rcParams.update({'font.size': 16})
+import unicodecsv
+import random
+import operator
+import math
 
 def myKmeans(X, k):
     # Visualize the cluster
@@ -135,7 +138,7 @@ def myKmeans(X, k):
 
 def main():
     nbaff = pd.read_csv("NBAStats.csv")
-    p_guards = nbaff[nbaff['Pos'] == 'PG']
+    #p_guards = nbaff[nbaff['Pos'] == 'PG']
     nbaff.head(3)
     # print(p_guards)
     nbaff_numeric = nbaff.drop(columns=['Player', 'Pos', 'Tm'])
@@ -144,6 +147,10 @@ def main():
     print(data_normalised)
     nclusters = 3
     myKmeans(data_normalised , nclusters)
+    train_data = data_normalised.head(376)
+    test_data = data_normalised.tail(100)
+    print(train_data)
+    print(test_data)
 
 if __name__ == '__main__':
     main()
