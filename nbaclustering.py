@@ -188,17 +188,18 @@ def main():
     #print(data_normalised)
 
     nclusters = 3
-    myKmeans(data_normalised , nclusters)
+    #myKmeans(data_normalised , nclusters)
 
     nclusters = 5
-    myKmeans(data_normalised, nclusters)
+    #myKmeans(data_normalised, nclusters)
 
     #7 Required columns
-    data_normalised = data_normalised.values[:, [12, 9, 16, 19, 20, 21, 22]]
-    print(data_normalised)
-    trainSet = data_normalised[:375, :]
+    data_normalised1 = data_normalised.values[:, [12, 9, 16, 19, 20, 21, 22]]
+    print(data_normalised1)
+
+    trainSet = data_normalised.values[:375, :]
     trainSet = np.array(trainSet).tolist()
-    testSet = data_normalised[375:, :]
+    testSet = nbaff_numeric.values[375:, :]
     testSet = np.array(testSet).tolist()
 
     print(trainSet)
