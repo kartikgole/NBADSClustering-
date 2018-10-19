@@ -7,6 +7,8 @@ import unicodecsv
 import random
 import operator
 import math
+import csv
+
 
 def myKmeans(X, k):
     # Visualize the cluster
@@ -42,7 +44,7 @@ def myKmeans(X, k):
 
     centroids_dict = centroids_to_dict(centroids)
 
-    # Calculating Eucledian distance (pythagoras thm)
+    # Calculating Eucledian distance (like pythagoras thm)
     def calculate_distance(centroid, player_values):
         root_distance = 0
 
@@ -53,9 +55,8 @@ def myKmeans(X, k):
 
         euclid_distance = math.sqrt(root_distance)
         return euclid_distance
-
-    # test
-    print(calculate_distance([0, 0], [3, 4]))
+# check1
+    #print(calculate_distance([0, 0], [3, 4]))
 
     def assign_to_cluster(row):
         player_vals = [row['FG'], row['FGA']]
@@ -136,21 +137,77 @@ def myKmeans(X, k):
     X['cluster'] = X.apply(lambda row: assign_to_cluster(row), axis=1)
     visualize_clusters(X, k, 3)
 
+def euclideanDist(x, xi):
+    d = 0.0
+    for i in range(len(x)-1):
+        d += pow((float(x[i])-float(xi[i])),2)  #euclidean distance
+    d = math.sqrt(d)
+    return d
+
+def knn_predict(test_data, train_data, k_value):
+    for i in test_data:
+        eu_Distance =[]
+        knn = []
+        good = 0
+
+        bad = 0
+        for j in train_data:
+            eu_dist = euclideanDist(i, j)
+            eu_Distance.append((j[5], eu_dist))
+            eu_Distance.sort(key = operator.itemgetter(1))
+            knn = eu_Distance[:k_value]
+            for k in knn:
+                if k[0] =='g':
+                    good += 1
+                else:
+                    bad +=1
+        if good > bad:
+            i.append('g')
+        elif good < bad:
+            i.append('b')
+        else:
+            i.append('NaN')
+
+#Accuracy calculation function
+def accuracy(test_data):
+    correct = 0
+    for i in test_data:
+        if i[5] == i[6]:
+            correct += 1
+    accuracy = float(correct)/len(test_data) *100  #accuracy
+    return accuracy
+
 def main():
     nbaff = pd.read_csv("NBAStats.csv")
     #p_guards = nbaff[nbaff['Pos'] == 'PG']
     nbaff.head(3)
     # print(p_guards)
     nbaff_numeric = nbaff.drop(columns=['Player', 'Pos', 'Tm'])
-    print(nbaff_numeric)
+    #print(nbaff_numeric)
     data_normalised = (nbaff_numeric - nbaff_numeric.mean()) / (nbaff_numeric.max() - nbaff_numeric.min())
-    print(data_normalised)
+    #print(data_normalised)
+
     nclusters = 3
     myKmeans(data_normalised , nclusters)
-    train_data = data_normalised.head(376)
-    test_data = data_normalised.tail(100)
-    print(train_data)
-    print(test_data)
+
+    nclusters = 5
+    myKmeans(data_normalised, nclusters)
+
+    #7 Required columns
+    data_normalised = data_normalised.values[:, [12, 9, 16, 19, 20, 21, 22]]
+    print(data_normalised)
+    trainSet = data_normalised[:375, :]
+    trainSet = np.array(trainSet).tolist()
+    testSet = data_normalised[375:, :]
+    testSet = np.array(testSet).tolist()
+
+    print(trainSet)
+    print(testSet)
+
+    K = 5  # Assumed K value
+    knn_predict(testSet, trainSet, K)
+    print("Accuracy : ", accuracy(testSet))
+
 
 if __name__ == '__main__':
     main()
