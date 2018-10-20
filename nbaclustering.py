@@ -11,12 +11,16 @@ import math
 
 def myKmeans(X, k):
 
+    #feature creation for assists/turnover ration
+    X['ATR'] = X['AST'] / X['TOV']
+
     # Just checking all data points in the NBA dataset by using features FG and FGA
+
 
     fig = plt.figure(num=None, figsize=(6, 6), edgecolor='k')
     ax = fig.add_subplot(1, 1, 1, facecolor="1.0")
-    ax.scatter(X['FG'], X['FGA'], alpha=0.5, c='y', edgecolors='g', s=150)
-    plt.title("475 values for FG * FGA")
+    ax.scatter(X['PS/G'], X['ATR'], alpha=0.5, c='y', edgecolors='g', s=150)
+    plt.title("475 values for PS/G * ATR")
     plt.xlabel('Field Goals')
     plt.ylabel('Field Goals Attempted')
     plt.show()
@@ -35,7 +39,7 @@ def myKmeans(X, k):
 
         # traversing the data frame using iterrows
         for index, row in centroids.iterrows():
-            coordinates = [row['FG'], row['FGA']]
+            coordinates = [row['PS/G'], row['ATR']]
             dictionary[counter] = coordinates
             counter += 1
 
@@ -57,7 +61,7 @@ def myKmeans(X, k):
 
     #we know the distances now we'll determine which point belongs to which cluster
     def assign_clust(row):
-        player_vals = [row['FG'], row['FGA']]
+        player_vals = [row['PS/G'], row['ATR']]
         dist_prev = -1
         cluster_id = None
 
@@ -79,8 +83,8 @@ def myKmeans(X, k):
         for cluster_id in range(0, k):
             df_cluster_id = df[df['cluster'] == cluster_id]
 
-            xmean = df_cluster_id['FG'].mean()
-            ymean = df_cluster_id['FGA'].mean()
+            xmean = df_cluster_id['PS/G'].mean()
+            ymean = df_cluster_id['ATR'].mean()
             new_centroids_dict[cluster_id] = [xmean, ymean]
 
             # Finish the logic
@@ -94,9 +98,9 @@ def myKmeans(X, k):
         ax = fig.add_subplot(1, 1, 1, facecolor="1.0")
         for n in range(num_clusters):
             clustered_df = df[df['cluster'] == n]
-            ax.scatter(clustered_df['FG'], clustered_df['FGA'], c=colors[n - 1], edgecolors='g', alpha=0.5, s=150)
-            plt.xlabel('Field Goals')
-            plt.ylabel('Field Goals Attempted')
+            ax.scatter(clustered_df['PS/G'], clustered_df['ATR'], c=colors[n - 1], edgecolors='g', alpha=0.5, s=150)
+            plt.xlabel('Points scored/game')
+            plt.ylabel('Assists to turnover ratio')
             plt.title('Clustering standardized FG * FA, Iteration %s' % (iteration))
         plt.show()
 
@@ -181,10 +185,8 @@ def main():
     nclusters = 5
     myKmeans(data_normalised, nclusters)
 
-    #Taking 7 Required attribute columns for Question 4
+    #Taking 7 Required attribute columns for Question 1.4 and 2.3
     data_normalised_7rows = data_normalised.values[:, [12, 9, 16, 19, 20, 21, 22]]
-
-
     trainSet = data_normalised_7rows[:375, :]
     trainSet1 = np.array(trainSet).tolist()
     testSet = data_normalised_7rows[375:, :]
@@ -193,7 +195,7 @@ def main():
     print(trainSet1)
     print(testSet1)
 
-    K = 5  # Assumed K value
+    K = 3  # Assumed K value
     myKNN(testSet1, trainSet1, K)
     print("Accuracy : ", accuracy(testSet1))
 
@@ -205,7 +207,7 @@ def main():
     print(fulltrainset1)
     print(fulltestset1)
 
-    K = 3 #Assumed K value for full train set
+    K = 5 #Assumed K value for full train set
     myKNN(fulltestset1, fulltrainset1, K)
     print("Accuracy: ", accuracy((fulltestset1)))
 
