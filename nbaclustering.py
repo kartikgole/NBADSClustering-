@@ -21,8 +21,8 @@ def myKmeans(X, k):
     ax = fig.add_subplot(1, 1, 1, facecolor="1.0")
     ax.scatter(X['PS/G'], X['ATR'], alpha=0.5, c='y', edgecolors='g', s=150)
     plt.title("475 values for PS/G * ATR")
-    plt.xlabel('Field Goals')
-    plt.ylabel('Field Goals Attempted')
+    plt.xlabel('Points Scored/Game')
+    plt.ylabel('Assists to turnover ratio')
     plt.show()
 
     # Generating random points so that centroids can be picked from them (i.e acc to no of clusters value k)
@@ -101,7 +101,7 @@ def myKmeans(X, k):
             ax.scatter(clustered_df['PS/G'], clustered_df['ATR'], c=colors[n - 1], edgecolors='g', alpha=0.5, s=150)
             plt.xlabel('Points scored/game')
             plt.ylabel('Assists to turnover ratio')
-            plt.title('Clustering standardized FG * FA, Iteration %s' % (iteration))
+            plt.title('Clustering standardized PS/G * ATR, Iteration %s' % (iteration))
         plt.show()
 
     iteration = 0
@@ -126,7 +126,7 @@ def myKmeans(X, k):
     X['cluster'] = X.apply(lambda row: assign_clust(row), axis=1)
     vis_clust(X, k, 3)
 
-def euclideanDist(x, xi):
+def euclDistance(x, xi):
     d = 0.0
     for i in range(len(x)-1):
         d += pow((float(x[i])-float(xi[i])),2)  #euclidean distance
@@ -140,7 +140,7 @@ def myKNN(test_data, train_data, k_value):
         good = 0
         bad = 0
         for j in train_data:
-            eu_dist = euclideanDist(i, j)
+            eu_dist = euclDistance(i, j)
             #print(eu_dist)
             eu_Distance.append((j[5], eu_dist))
             eu_Distance.sort(key=operator.itemgetter(1))
